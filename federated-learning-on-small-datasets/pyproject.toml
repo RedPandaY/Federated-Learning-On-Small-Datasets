@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "test-app"
+version = "1.0.0"
+description = ""
+license = "Apache-2.0"
+dependencies = [
+    "flwr[simulation]>=1.13.1",
+    "flwr-datasets[vision]>=0.3.0",
+    "torch==2.2.1",
+    "torchvision==0.17.1",
+    "wandb",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.flwr.app]
+publisher = "testname"
+
+[tool.flwr.app.components]
+serverapp = "test_app.server_app:app"
+clientapp = "test_app.client_app:app"
+
+[tool.flwr.app.config]
+num-server-rounds = 10000
+fraction-fit = 1
+local-epochs = 1
+strategy = "FedAvgWithDC" # [CustomFedAvg, FedAvgWithDC, FedAvg, BaselineDC]
+fraction_evaluate = 0
+min_available_clients = 50
+global_vald_fn= "get_evaluate_fn" # [get_evaluate_fn, get_evaluate_fn_DC,get_evaluate_fn_dice,get_evaluateH_fn]
+
+[tool.CustomConfig]
+seed=2
+b=10
+d=1
+device=1
+
+[tool.flwr.federations]
+default = "local-simulation"
+
+[tool.flwr.federations.local-simulation]
+options.num-supernodes = 50
